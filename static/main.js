@@ -77,6 +77,16 @@ function showBotMessage(message, datetime) {
 }
 
 /**
+ * Displays a loading message from the bot.
+ */
+function showLoadingMessage() {
+    renderMessageToScreen({
+        text: '<i class="fa fa-spinner fa-spin loading-icon"></i>',
+        message_side: 'left',
+    });
+}
+
+/**
  * Get input from user and show it on screen on button click.
  */
 $('#send_button').on('click', function (e) {
@@ -85,8 +95,8 @@ $('#send_button').on('click', function (e) {
     showUserMessage(userMessage);
     $('#msg_input').val('');
 
-    // Show loading icon
-    $('.loading-icon').show();
+    // Show loading message from bot
+    showLoadingMessage();
 
     // send user message to webhook and show bot message
     sendToWebhook(userMessage);
@@ -107,19 +117,14 @@ function sendToWebhook(userMessage) {
     })
     .then(response => response.json())
     .then(data => {
-        // Hide loading icon
-        $('.loading-icon').hide();
-
-        // Show bot message with the response from webhook
-        showBotMessage(data.Result); // Assuming the webhook returns { reply: "Your response" }
+        // Replace loading icon with the actual response
+        $('.messages .message:last .text').html(data.Result); // Assuming the webhook returns { reply: "Your response" }
     })
     .catch(error => {
         console.error('Error:', error);
 
-        // Hide loading icon
-        $('.loading-icon').hide();
-
-        showBotMessage('Sorry, something went wrong.'); // Fallback message in case of error
+        // Replace loading icon with error message
+        $('.messages .message:last .text').html('Sorry, something went wrong.');
     });
 }
 
